@@ -1,0 +1,33 @@
+<html>
+<body>
+<input type="text" id="clipboard" value="" />
+<script>
+API_URL = "http://goo.gl/api/url";
+// ブラウザアクションがクリックされた場合の処理
+chrome.browserAction.onClicked.addListener(function(tab) {
+  setClipboard(getShortUrl(tab.url));
+});
+
+function setClipboard (url) {
+  var elm = document.getElementById('clipboard');
+  elm.value = url + '.qr';
+  elm.select();
+  document.execCommand('copy');
+}
+
+function getShortUrl (url) {
+  var xhr = new XMLHttpRequest();
+  var opt = "url=" + encodeURIComponent(url);
+
+  xhr.open("post", API_URL, false);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  var shortUrl = "";
+  xhr.onreadystatechange = function() {
+    shortUrl = JSON.parse(xhr.responseText).short_url;
+  }
+  xhr.send(opt);
+  return shortUrl;
+}
+</script>
+</body>
+</html>
